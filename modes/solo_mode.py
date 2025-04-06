@@ -8,11 +8,20 @@ def run():
     if "board" not in st.session_state:
         reset_board()
 
-    cols = st.columns(3)
-    for i in range(3):
-        for j in range(3):
-            index = i * 3 + j
-            with cols[j]:
+    if "pending_bot_move" not in st.session_state:
+        st.session_state.pending_bot_move = False
+
+    # If bot is up next, make its move first
+    if st.session_state.turn == "bot" and not st.session_state.game_over and not st.session_state.pending_bot_move:
+        st.session_state.pending_bot_move = True
+        bot_move()
+
+    # Mobile-friendly 3x3 button grid
+    for row in range(3):
+        cols = st.columns([1, 1, 1])
+        for col in range(3):
+            index = row * 3 + col
+            with cols[col]:
                 if st.button(st.session_state.board[index], key=f"cell_{index}", use_container_width=True):
                     if not st.session_state.game_over and st.session_state.board[index] == EMPTY and st.session_state.turn == "player":
                         st.session_state.board[index] = PLAYER
@@ -23,8 +32,10 @@ def run():
                             st.session_state.game_over = True
                         else:
                             st.session_state.turn = "bot"
-                            bot_move()
+                            st.session_state.pending_bot_move = False
+                        st.rerun()  # Force UI to update immediately
 
+    # Show result
     if st.session_state.game_over:
         if st.session_state.winner == PLAYER:
             st.success("🎉 Princess wins!")
@@ -47,3 +58,5 @@ def bot_move():
             st.session_state.game_over = True
         else:
             st.session_state.turn = "player"
+    st.session_state.pending_bot_move = False
+    st.rerun()

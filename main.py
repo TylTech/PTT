@@ -5,10 +5,8 @@ st.set_page_config(page_title="Princess Tac Toe", layout="centered")
 st.title("✨ Princess Tac Toe 👸🦄")
 
 # Game mode selector
-mode = st.radio(
-    "Choose your royal game mode:",
-    ["Solo vs Bot", "Local Two Player", "Online Multiplayer"]
-)
+mode = st.selectbox("Choose your royal game mode:", ["Solo vs Bot", "Local Two Player", "Online Multiplayer"])
+
 
 # Route to selected mode
 if mode == "Solo vs Bot":
