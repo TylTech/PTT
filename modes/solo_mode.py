@@ -4,7 +4,7 @@ from utils.game_logic import check_winner, reset_board, EMPTY, PLAYER, BOT
 
 def run():
     st.header("👸 Solo Mode: Princess vs. Unicorn Bot 🦄")
-    st.caption("🧸 Version: Kid-friendly touch layout fix (v1.2)")
+    st.caption("🧸 Version: Kid-friendly layout + mobile 3x3 fix (v1.3)")
 
     if "board" not in st.session_state:
         reset_board()
@@ -17,25 +17,27 @@ def run():
         st.session_state.pending_bot_move = True
         bot_move()
 
-    # Kid-friendly emoji buttons in a 3x3 grid
+    # Kid-friendly emoji buttons in a 3x3 layout that stays intact on mobile
     board = st.session_state.board
+    container = st.container()
     for row in range(3):
-        cols = st.columns([1, 1, 1])
-        for col in range(3):
-            index = row * 3 + col
-            with cols[col]:
-                if st.button(board[index], key=f"cell_{index}", use_container_width=True):
-                    if not st.session_state.game_over and board[index] == EMPTY and st.session_state.turn == "player":
-                        board[index] = PLAYER
-                        if check_winner(board, PLAYER):
-                            st.session_state.game_over = True
-                            st.session_state.winner = PLAYER
-                        elif EMPTY not in board:
-                            st.session_state.game_over = True
-                        else:
-                            st.session_state.turn = "bot"
-                            st.session_state.pending_bot_move = False
-                        st.rerun()
+        with container:
+            cols = st.columns([1, 1, 1], gap="small")
+            for col in range(3):
+                index = row * 3 + col
+                with cols[col]:
+                    if st.button(board[index], key=f"cell_{index}", use_container_width=True):
+                        if not st.session_state.game_over and board[index] == EMPTY and st.session_state.turn == "player":
+                            board[index] = PLAYER
+                            if check_winner(board, PLAYER):
+                                st.session_state.game_over = True
+                                st.session_state.winner = PLAYER
+                            elif EMPTY not in board:
+                                st.session_state.game_over = True
+                            else:
+                                st.session_state.turn = "bot"
+                                st.session_state.pending_bot_move = False
+                            st.rerun()
 
     # Game result messages
     if st.session_state.game_over:
